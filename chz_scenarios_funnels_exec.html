@@ -1,0 +1,793 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Основные пользовательские сценарии Честного ЗНАКа</title>
+  <style>
+    :root {
+      --bg: #f4f6fa;
+      --panel: #ffffff;
+      --ink: #172033;
+      --muted: #667085;
+      --line: #d9e0ea;
+      --blue: #1f5f9e;
+      --blue-soft: #eef5ff;
+      --green: #197b4a;
+      --amber: #9a6700;
+      --red: #a43b3b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.42;
+    }
+
+    header {
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      padding: 28px 34px 24px;
+    }
+
+    main { padding: 24px 34px 46px; }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin: 32px 0 14px;
+      color: #1f4e79;
+      font-size: 22px;
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      color: #24364f;
+    }
+
+    p { margin: 0 0 10px; }
+
+    .lead {
+      max-width: 1160px;
+      color: #344054;
+      font-size: 15px;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(190px, 1fr));
+      gap: 12px;
+      max-width: 1280px;
+      margin-top: 18px;
+    }
+
+    .summary-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 13px 14px;
+    }
+
+    .summary-card strong {
+      display: block;
+      font-size: 22px;
+      color: #1f4e79;
+      margin-bottom: 4px;
+    }
+
+    .toc {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(210px, 1fr));
+      gap: 8px;
+      max-width: 1280px;
+      margin: 18px 0 28px;
+    }
+
+    .toc a {
+      display: block;
+      padding: 9px 10px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      text-decoration: none;
+      color: #1f4e79;
+      font-size: 13px;
+    }
+
+    .scenario {
+      max-width: 1320px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      margin: 0 0 18px;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(21, 35, 56, 0.05);
+    }
+
+    .scenario-head {
+      display: grid;
+      grid-template-columns: 74px 1fr 180px;
+      gap: 12px;
+      align-items: start;
+      padding: 15px 16px;
+      background: #fbfdff;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .num {
+      width: 52px;
+      min-height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 7px;
+      background: var(--blue-soft);
+      color: #1f4e79;
+      font-weight: 700;
+    }
+
+    .tag {
+      justify-self: end;
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: #475467;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .scenario-body { padding: 14px 16px 16px; }
+
+    .story {
+      padding: 11px 12px;
+      background: #f8fafc;
+      border: 1px solid #e6edf5;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border: 1px solid var(--line);
+      margin: 10px 0 12px;
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 9px;
+      font-size: 13px;
+      vertical-align: top;
+    }
+
+    th {
+      background: #edf4fb;
+      color: #1f4e79;
+      text-align: left;
+    }
+
+    .right { text-align: right; white-space: nowrap; }
+    .muted { color: var(--muted); }
+    .good { color: var(--green); font-weight: 700; }
+    .warn { color: var(--amber); font-weight: 700; }
+    .bad { color: var(--red); font-weight: 700; }
+
+    details {
+      max-width: 1320px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin: 16px 0;
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: 700;
+      color: #1f4e79;
+    }
+
+    code {
+      font-family: Consolas, Monaco, monospace;
+      font-size: 12px;
+      background: #f1f5f9;
+      padding: 1px 4px;
+      border-radius: 4px;
+    }
+
+    @media (max-width: 980px) {
+      header, main { padding-left: 18px; padding-right: 18px; }
+      .summary, .toc { grid-template-columns: 1fr; }
+      .scenario-head { grid-template-columns: 1fr; }
+      .tag { justify-self: start; }
+      table { display: block; overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Основные пользовательские сценарии Честного ЗНАКа</h1>
+    <p class="lead">Версия для продуктового ревью: сценарии собраны как пользовательские пути с промежуточными шагами воронки. Основная единица подсчета в таблицах — сессия пользователя.</p>
+    <div class="summary">
+      <div class="summary-card"><strong>24</strong>сценария в текущей карте</div>
+      <div class="summary-card"><strong>1,49 млн</strong>открытий сканера</div>
+      <div class="summary-card"><strong>143,6 тыс.</strong>стартов онбординга</div>
+      <div class="summary-card"><strong>86,4 тыс.</strong>стартов авторизации</div>
+    </div>
+  </header>
+
+  <main>
+    <h2>Навигация</h2>
+    <nav class="toc">
+      <a href="#s01">01. Первичный онбординг</a>
+      <a href="#s02">02. Авторизация</a>
+      <a href="#s03">03. Сканирование товара</a>
+      <a href="#s04">04. Неуспешное распознавание</a>
+      <a href="#s05">05. Средняя цена</a>
+      <a href="#s06">06. Польза и состав</a>
+      <a href="#s07">07. Документы и сертификаты</a>
+      <a href="#s08">08. Инструкция к лекарству</a>
+      <a href="#s09">09. Жалоба с главной</a>
+      <a href="#s10">10. Жалоба из карточки товара</a>
+      <a href="#s11">11. Черновики жалоб</a>
+      <a href="#s12">12. История проверок</a>
+      <a href="#s13">13. Действия из истории</a>
+      <a href="#s14">14. Мои покупки</a>
+      <a href="#s15">15. Товар из чека</a>
+      <a href="#s16">16. Бронирование лекарств</a>
+      <a href="#s17">17. Будильник лекарств</a>
+      <a href="#s18">18. Срок годности</a>
+      <a href="#s19">19. Достижения</a>
+      <a href="#s20">20. Подарки</a>
+      <a href="#s21">21. Сторис</a>
+      <a href="#s22">22. Профиль</a>
+      <a href="#s23">23. Помощь и чат</a>
+      <a href="#s24">24. Статус жалобы</a>
+    </nav>
+
+    <section id="s01" class="scenario">
+      <div class="scenario-head">
+        <div class="num">01</div>
+        <div><h3>Первичный онбординг</h3><p class="muted">Пользователь впервые проходит вступительные экраны или пропускает их.</p></div>
+        <div class="tag">Первый опыт</div>
+      </div>
+      <div class="scenario-body">
+        <div class="story">User Story: как новый пользователь, я хочу быстро понять приложение или пропустить знакомство, чтобы перейти к основному действию.</div>
+        <table>
+          <thead><tr><th>Шаг</th><th class="right">Сессии</th><th class="right">От старта</th><th>Комментарий</th></tr></thead>
+          <tbody>
+            <tr><td>Старт онбординга</td><td class="right">143 626</td><td class="right">100%</td><td>Любое событие онбординга</td></tr>
+            <tr><td>Нажали «Далее» на экране 1</td><td class="right">101 142</td><td class="right">70,42%</td><td>Пользователь пошел по просмотру экранов</td></tr>
+            <tr><td>Нажали «Далее» на экране 2</td><td class="right">91 640</td><td class="right">63,80%</td><td></td></tr>
+            <tr><td>Нажали «Далее» на экране 3</td><td class="right">88 351</td><td class="right">61,51%</td><td></td></tr>
+            <tr><td>Нажали «Готово»</td><td class="right">97 199</td><td class="right good">67,68%</td><td>Финальное завершение онбординга</td></tr>
+            <tr><td>Пропустили онбординг</td><td class="right">43 584</td><td class="right">30,35%</td><td>Чаще всего пропускают на первом экране: 30 880 сессий</td></tr>
+          </tbody>
+        </table>
+        <p class="muted">Около 11 тыс. сессий не нажали ни «Далее» на первом экране, ни «Пропустить» на первом экране. Это отдельный хвост: закрытие приложения, уход назад, техническое прерывание или событие старта без следующего клика.</p>
+      </div>
+    </section>
+
+    <section id="s02" class="scenario">
+      <div class="scenario-head">
+        <div class="num">02</div>
+        <div><h3>Авторизация</h3><p class="muted">Пользователь сталкивается с авторизацией в разных местах приложения.</p></div>
+        <div class="tag">Сквозной сценарий</div>
+      </div>
+      <div class="scenario-body">
+        <div class="story">User Story: как пользователь, я хочу войти только тогда, когда это нужно для конкретного действия, и без потери текущего контекста.</div>
+        <table>
+          <thead><tr><th>Точка входа</th><th class="right">Стартов</th><th class="right">Успешных входов</th><th class="right">Конверсия</th></tr></thead>
+          <tbody>
+            <tr><td>Главная: вход с основного экрана</td><td class="right">39 341</td><td class="right">25 188</td><td class="right">64,02%</td></tr>
+            <tr><td>Средняя цена</td><td class="right">11 454</td><td class="right">3 437</td><td class="right warn">30,01%</td></tr>
+            <tr><td>Функциональный вход с главной</td><td class="right">9 873</td><td class="right">7 200</td><td class="right">72,93%</td></tr>
+            <tr><td>Профиль</td><td class="right">6 516</td><td class="right">3 993</td><td class="right">61,28%</td></tr>
+            <tr><td>Карта ингредиентов</td><td class="right">2 648</td><td class="right">556</td><td class="right bad">21,00%</td></tr>
+            <tr><td>Мои покупки</td><td class="right">2 348</td><td class="right">811</td><td class="right warn">34,54%</td></tr>
+            <tr><td>Жалоба после сканирования: официальный путь через Госуслуги</td><td class="right">2 000</td><td class="right">251</td><td class="right bad">12,55%</td></tr>
+          </tbody>
+        </table>
+        <p class="muted">Здесь показаны только места, где приложение подняло авторизацию. По выбору способа авторизации: телефон — 48 401 сессия, Госуслуги — 11 976, отмена/анонимный путь — 2 486. Для жалобы есть разные пути: по номеру телефона/анонимно и официальный путь через Госуслуги. Строка про Госуслуги — не вся жалоба после сканирования, а отдельный auth-trigger.</p>
+      </div>
+    </section>
+
+    <section id="s03" class="scenario">
+      <div class="scenario-head">
+        <div class="num">03</div>
+        <div><h3>Сканирование товара</h3><p class="muted">Базовый путь: открыть сканер, считать код, получить карточку товара.</p></div>
+        <div class="tag">Core</div>
+      </div>
+      <div class="scenario-body">
+        <div class="story">User Story: как покупатель, я хочу отсканировать код на товаре и увидеть понятный результат проверки.</div>
+        <table>
+          <thead><tr><th>Шаг</th><th class="right">Сессии</th><th class="right">От предыдущего</th><th class="right">От открытия сканера</th></tr></thead>
+          <tbody>
+            <tr><td>Открыли сканер</td><td class="right">1 485 327</td><td class="right">100%</td><td class="right">100%</td></tr>
+            <tr><td>Получили любой результат распознавания кода</td><td class="right">1 246 281</td><td class="right">86,60%</td><td class="right">83,91%</td></tr>
+            <tr><td>Товар найден по коду маркировки</td><td class="right">1 212 406</td><td class="right">97,28%</td><td class="right good">81,63%</td></tr>
+            <tr><td>После найденного товара отобразилась средняя цена</td><td class="right">349 339</td><td class="right">28,81%</td><td class="right">23,52%</td></tr>
+            <tr><td>После найденного товара отобразилась польза/состав</td><td class="right">222 721</td><td class="right">18,37%</td><td class="right">14,99%</td></tr>
+            <tr><td>Из карточки товара нажали «Сообщить о нарушении»</td><td class="right">36 858</td><td class="right">3,04%</td><td class="right">2,48%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="s04" class="scenario">
+      <div class="scenario-head">
+        <div class="num">04</div>
+        <div><h3>Неуспешное или альтернативное распознавание</h3><p class="muted">Что происходит, когда сканирование не превращается в обычную карточку товара.</p></div>
+        <div class="tag">Диагностика сканера</div>
+      </div>
+      <div class="scenario-body">
+        <div class="story">User Story: как пользователь, я хочу получить понятную подсказку, если код не считывается или найден не тот тип кода.</div>
+        <table>
+          <thead><tr><th>Ветка после открытия сканера</th><th class="right">Сессии</th><th class="right">От сканера</th><th>Смысл</th></tr></thead>
+          <tbody>
+            <tr><td>Код маркировки не найден</td><td class="right">76 072</td><td class="right">5,29%</td><td>Событие результата с признаком «товар не найден»</td></tr>
+            <tr><td>QR-результат</td><td class="right">61 536</td><td class="right">4,14%</td><td>Пользователь считал QR, не обычный Data Matrix товара</td></tr>
+            <tr><td>Штрихкод</td><td class="right">102 111</td><td class="right">6,87%</td><td>Переход в сценарий штрихкода/каталога</td></tr>
+            <tr><td>Признак дефекта печати/кода</td><td class="right">208 573</td><td class="right">14,49%</td><td>Диагностическая ветка; не складывается с остальными ветками в 100%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="s05" class="scenario">
+      <div class="scenario-head">
+        <div class="num">05</div>
+        <div><h3>Просмотр средней цены</h3><p class="muted">Виджет средней цены на карточке товара.</p></div>
+        <div class="tag">Карточка товара</div>
+      </div>
+      <div class="scenario-body">
+        <div class="story">User Story: как покупатель, я хочу понять, насколько цена товара отличается от средней.</div>
+        <table>
+          <thead><tr><th>Шаг</th><th class="right">Сессии</th><th class="right">Конверсия</th></tr></thead>
+          <tbody>
+            <tr><td>Товар найден после сканирования</td><td class="right">1 212 406</td><td class="right">100%</td></tr>
+            <tr><td>Отобразилась средняя цена</td><td class="right">349 339</td><td class="right">28,81%</td></tr>
+            <tr><td>Нажали выбор/изменение региона цены</td><td class="right">2 210</td><td class="right">0,63% от показов цены</td></tr>
+          </tbody>
+        </table>
+        <p class="muted">По товарным группам виджет чаще всего отображается у лекарств, молока, шин, парфюмерии и обуви.</p>
+      </div>
+    </section>
+
+    <section id="s06" class="scenario">
+      <div class="scenario-head">
+        <div class="num">06</div>
+        <div><h3>Польза продукта и состав</h3><p class="muted">ЧЗП: светофор, компоненты, добавки и подробности состава.</p></div>
+        <div class="tag">Карточка товара</div>
+      </div>
+      <div class="scenario-body">
+        <div class="story">User Story: как покупатель, я хочу понять пользу продукта и посмотреть детали состава.</div>
+        <table>
+          <thead><tr><th>Шаг</th><th class="right">Сессии</th><th class="right">Конверсия</th></tr></thead>
+          <tbody>
+            <tr><td>Товар найден после сканирования</td><td class="right">1 212 406</td><td class="right">100%</td></tr>
+            <tr><td>Отобразился виджет пользы/состава</td><td class="right">222 721</td><td class="right">18,37%</td></tr>
+            <tr><td>Нажали на виджет пользы</td><td class="right">20 166</td><td class="right">9,05% от показов</td></tr>
+            <tr><td>Нажали «Узнать больше» внутри компонента</td><td class="right">3 070</td><td class="right">1,38% от показов</td></tr>
+            <tr><td>Нажали на компонент состава</td><td class="right">7 060</td><td class="right">3,17% от показов</td></tr>
+          </tbody>
+        </table>
+        <p class="muted">Самые заметные товарные группы: вода — 72,91% найденных товаров этой группы, напитки — 43,17%, молоко — 40,43%. Эти проценты не складываются между собой: это покрытие виджета внутри каждой товарной группы.</p>
+      </div>
+    </section>
+
+    <section id="s07" class="scenario">
+      <div class="scenario-head">
+        <div class="num">07</div>
+        <div><h3>Документы и сертификаты</h3><p class="muted">Ссылки на документы, ветсертификаты и похожие подтверждающие материалы в карточке товара.</p></div>
+        <div class="tag">Карточка товара</div>
+      </div>
+      <div class="scenario-body">
+        <div class="story">User Story: как пользователь, я хочу открыть подтверждающие документы по товару, если они доступны.</div>
+        <table>
+          <thead><tr><th>Шаг</th><th class="right">Сессии</th><th class="right">Конверсия</th></tr></thead>
+          <tbody>
+            <tr><td>Товар найден после сканирования</td><td class="right">1 212 406</td><td class="right">100%</td></tr>
+            <tr><td>Отобразилась ссылка на документ или сертификат</td><td class="right">6 902</td><td class="right">0,57%</td></tr>
+            <tr><td>Пользователь нажал на документ или сертификат</td><td class="right">206</td><td class="right">2,98% от показов ссылки</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="s08" class="scenario">
+      <div class="scenario-head">
+        <div class="num">08</div>
+        <div><h3>Инструкция к лекарству</h3><p class="muted">Отображение и открытие инструкции на карточке лекарственного товара.</p></div>
+        <div class="tag">Лекарства</div>
+      </div>
+      <div class="scenario-body">
+        <div class="story">User Story: как пользователь, я хочу открыть инструкцию к лекарству после проверки товара.</div>
+        <table>
+          <thead><tr><th>Шаг</th><th class="right">Сессии</th><th class="right">Конверсия</th></tr></thead>
+          <tbody>
+            <tr><td>Отобразилась ссылка на инструкцию</td><td class="right">61 731</td><td class="right">100%</td></tr>
+            <tr><td>Пользователь нажал на инструкцию</td><td class="right">3 460</td><td class="right">5,60%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="s09" class="scenario">
+      <div class="scenario-head">
+        <div class="num">09</div>
+        <div><h3>Сообщение о нарушении с главной</h3><p class="muted">Пользователь начинает жалобу без предварительной карточки товара.</p></div>
+        <div class="tag">Жалобы</div>
+      </div>
+      <div class="scenario-body">
+        <div class="story">User Story: как пользователь, я хочу сообщить о нарушении напрямую с главной, если проблема уже понятна.</div>
+        <table>
+          <thead><tr><th>Шаг</th><th class="right">Сессии</th><th class="right">От старта</th></tr></thead>
+          <tbody>
+            <tr><td>Нажали «Сообщить о нарушении» на главной</td><td class="right">93 035</td><td class="right">100%</td></tr>
+            <tr><td>Выбрали тип нарушения</td><td class="right">13 574</td><td class="right">14,59%</td></tr>
+            <tr><td>Перешли дальше после шага с фото/камерой</td><td class="right">1 351</td><td class="right">1,45%</td></tr>
+            <tr><td>Сохранили черновик</td><td class="right">712</td><td class="right">0,77%</td></tr>
+            <tr><td>Отправили жалобу</td><td class="right">1 152</td><td class="right bad">1,24%</td></tr>
+          </tbody>
+        </table>
+        <p class="muted">Шаг выбора категории убран из основной воронки: по текущей разметке он почти не фиксируется в массовом флоу и не дает надежной продуктовой картины. «Перешли дальше после шага с фото/камерой» — это нажатие кнопки «Далее» на экране камеры/добавления фото.</p>
+      </div>
+    </section>
+
+    <section id="s10" class="scenario">
+      <div class="scenario-head">
+        <div class="num">10</div>
+        <div><h3>Сообщение о нарушении из карточки товара</h3><p class="muted">Пользователь сначала сканирует товар, потом переходит к жалобе.</p></div>
+        <div class="tag">Жалобы</div>
+      </div>
+      <div class="scenario-body">
+        <div class="story">User Story: как пользователь, я хочу пожаловаться на конкретный отсканированный товар, чтобы приложение подставило контекст товара.</div>
+        <table>
+          <thead><tr><th>Шаг</th><th class="right">Сессии</th><th class="right">От старта</th></tr></thead>
+          <tbody>
+            <tr><td>Нажали «Сообщить о нарушении» в карточке товара</td><td class="right">39 419</td><td class="right">100%</td></tr>
+            <tr><td>Продолжили после камеры/фото</td><td class="right">2 357</td><td class="right">5,98%</td></tr>
+            <tr><td>Вышли с экрана камеры</td><td class="right">1 362</td><td class="right">3,46%</td></tr>
+            <tr><td>Сохранили черновик</td><td class="right">2 452</td><td class="right">6,22%</td></tr>
+            <tr><td>Нажали «Не сохранить» при первом выходе</td><td class="right">24 660</td><td class="right">62,56%</td></tr>
+            <tr><td>Отправили жалобу</td><td class="right">2 856</td><td class="right">7,25%</td></tr>
+          </tbody>
+        </table>
+        <p class="muted">«Сохранили» и «Не сохранить» не должны давать 100%: это не взаимоисключающие финалы всей жалобы, а действия в шторке/состоянии выхода. Часть пользователей отправляет жалобу, отменяет, уходит без явного события или не доходит до шторки сохранения.</p>
+      </div>
+    </section>
+
+    <section id="s11" class="scenario">
+      <div class="scenario-head">
+        <div class="num">11</div>
+        <div><h3>Черновики жалоб</h3><p class="muted">Что происходит после сохранения или удаления черновика.</p></div>
+        <div class="tag">Жалобы</div>
+      </div>
+      <div class="scenario-body">
+        <div class="story">User Story: как пользователь, я хочу вернуться к незавершенной жалобе и отправить ее позже.</div>
+        <table>
+          <thead><tr><th>Шаг</th><th class="right">Сессии</th><th class="right">Конверсия</th></tr></thead>
+          <tbody>
+            <tr><td>Появилось действие с черновиком</td><td class="right">33 989</td><td class="right">100%</td></tr>
+            <tr><td>Пользователь нажал «Сохранить»</td><td class="right">4 170</td><td class="right">12,27%</td></tr>
+            <tr><td>Пользователь нажал «Не сохранить»</td><td class="right">30 376</td><td class="right">89,37%</td></tr>
+            <tr><td>Жалоба была отправлена после действия с черновиком в этой же сессии</td><td class="right">610</td><td class="right">1,79%</td></tr>
+          </tbody>
+        </table>
+        <p class="muted">Это сессионная воронка. Отдельно на уровне пользователя за период было 768 отправок после черновика, но для основной страницы оставлен один понятный разрез.</p>
+      </div>
+    </section>
+
+    <section id="s12" class="scenario">
+      <div class="scenario-head">
+        <div class="num">12</div>
+        <div><h3>История проверок</h3><p class="muted">Пользователь открывает историю и переходит в карточки прошлых проверок.</p></div>
+        <div class="tag">Возврат к результату</div>
+      </div>
+      <div class="scenario-body">
+        <div class="story">User Story: как пользователь, я хочу вернуться к ранее проверенному товару или чеку.</div>
+        <table>
+          <thead><tr><th>Шаг</th><th class="right">Сессии</th><th class="right">Конверсия</th></tr></thead>
+          <tbody>
+            <tr><td>Открыли историю проверок</td><td class="right">122 443</td><td class="right">100%</td></tr>
+            <tr><td>Открыли элемент истории</td><td class="right">59 986</td><td class="right">48,99%</td></tr>
+            <tr><td>Использовали фильтр</td><td class="right">10 511</td><td class="right">8,58%</td></tr>
+            <tr><td>Удалили элемент истории</td><td class="right">5 542</td><td class="right">4,53%</td></tr>
+          </tbody>
+        </table>
+        <p class="muted">Элемент истории — любой объект в истории: сканирование, чек или жалоба. Для точного продуктового разреза нужен дополнительный срез по параметру типа элемента.</p>
+        <table>
+          <thead><tr><th>Тип элемента истории</th><th class="right">Сессии</th><th class="right">Пользователи</th></tr></thead>
+          <tbody>
+            <tr><td>Сканирование</td><td class="right">50 874</td><td class="right">39 241</td></tr>
+            <tr><td>Жалоба</td><td class="right">8 812</td><td class="right">4 923</td></tr>
+            <tr><td>Товар по GTIN</td><td class="right">5 975</td><td class="right">5 408</td></tr>
+            <tr><td>Чек</td><td class="right">1 768</td><td class="right">1 400</td></tr>
+            <tr><td>Не определено</td><td class="right">979</td><td class="right">875</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="s13" class="scenario">
+      <div class="scenario-head">
+        <div class="num">13</div>
+        <div><h3>Действия из истории</h3><p class="muted">Что пользователь делает после открытия товара из истории.</p></div>
+        <div class="tag">Возврат к результату</div>
+      </div>
+      <div class="scenario-body">
+        <div class="story">User Story: как пользователь, я хочу из истории снова открыть полезные действия по товару: цену, состав, документы или жалобу.</div>
+        <table>
+          <thead><tr><th>Действие после элемента истории</th><th class="right">Сессии</th><th class="right">От открытий элемента</th></tr></thead>
+          <tbody>
+            <tr><td>Открыли среднюю цену</td><td class="right">10 371</td><td class="right">17,29%</td></tr>
+            <tr><td>Открыли пользу/состав</td><td class="right">6 361</td><td class="right">10,60%</td></tr>
+            <tr><td>Открыли документы</td><td class="right">6 423</td><td class="right">10,71%</td></tr>
+            <tr><td>Перешли к жалобе</td><td class="right">2 774</td><td class="right">4,62%</td></tr>
+            <tr><td>Снова открыли сканер после истории</td><td class="right">17 931</td><td class="right">14,64% от открытий истории</td></tr>
+          </tbody>
+        </table>
+        <p class="muted">«Снова открыли сканер после истории» считалось как открытие сканера после события открытия истории в рамках той же сессии.</p>
+      </div>
+    </section>
+
+    <section id="s14" class="scenario">
+      <div class="scenario-head">
+        <div class="num">14</div>
+        <div><h3>Мои покупки</h3><p class="muted">Пользователь открывает раздел покупок и работает с чеками.</p></div>
+        <div class="tag">Чеки</div>
+      </div>
+      <div class="scenario-body">
+        <div class="story">User Story: как пользователь, я хочу открыть свои покупки, добавить чек и посмотреть товары внутри чека.</div>
+        <table>
+          <thead><tr><th>Шаг</th><th class="right">Сессии</th><th class="right">Конверсия</th></tr></thead>
+          <tbody>
+            <tr><td>Старт сценария «Мои покупки»</td><td class="right">7 611</td><td class="right">100%</td></tr>
+            <tr><td>Открылся экран «Мои покупки»</td><td class="right">6 356</td><td class="right">83,51%</td></tr>
+            <tr><td>Нажали на покупку/чек</td><td class="right">1 476</td><td class="right">19,39%</td></tr>
+            <tr><td>Нажали «Добавить покупку»</td><td class="right">1 132</td><td class="right">14,87%</td></tr>
+          </tbody>
+        </table>
+        <p class="muted">Часть пользователей может попадать не в список покупок, а сразу в сценарий добавления покупки, если покупок нет или требуется авторизация/добавление. Поэтому открытие экрана «Мои покупки» не обязано быть 100% от старта сценария.</p>
+      </div>
+    </section>
+
+    <section id="s15" class="scenario">
+      <div class="scenario-head">
+        <div class="num">15</div>
+        <div><h3>Переход к товару из чека</h3><p class="muted">Пользователь открывает товар из чека, если чек содержит маркированные товары.</p></div>
+        <div class="tag">Чеки</div>
+      </div>
+      <div class="scenario-body">
+        <div class="story">User Story: как пользователь, я хочу из чека перейти в такую же карточку товара, как после сканирования.</div>
+        <table>
+          <thead><tr><th>Шаг</th><th class="right">Сессии</th><th class="right">Конверсия</th></tr></thead>
+          <tbody>
+            <tr><td>Открылся экран «Мои покупки»</td><td class="right">6 356</td><td class="right">100%</td></tr>
+            <tr><td>Открыли чек</td><td class="right">491</td><td class="right">7,72%</td></tr>
+            <tr><td>Нажали на маркированный товар в чеке</td><td class="right">225</td><td class="right">45,82% от открытых чеков</td></tr>
+          </tbody>
+        </table>
+        <p class="muted">Клик на товар доступен не во всех чеках: в чеке должны быть маркированные товары.</p>
+      </div>
+    </section>
+
+    <section id="s16" class="scenario">
+      <div class="scenario-head">
+        <div class="num">16</div>
+        <div><h3>Бронирование лекарств</h3><p class="muted">Новый расчет построен по событиям бронирования, без старых событий поиска лекарств.</p></div>
+        <div class="tag">Лекарства</div>
+      </div>
+      <div class="scenario-body">
+        <div class="story">User Story: как пользователь, я хочу найти лекарство и забронировать его в аптеке.</div>
+        <table>
+          <thead><tr><th>Шаг</th><th class="right">Сессии</th><th class="right">От предыдущего</th></tr></thead>
+          <tbody>
+            <tr><td>Открыли бронирование лекарств с главной</td><td class="right">15 079</td><td class="right">100%</td></tr>
+            <tr><td>Выбрали лекарство из найденных вариантов</td><td class="right">7 780</td><td class="right">51,59%</td></tr>
+            <tr><td>Включили фильтр доступности</td><td class="right">821</td><td class="right">10,55%</td></tr>
+            <tr><td>Добавили лекарство в корзину</td><td class="right">178</td><td class="right">2,29%</td></tr>
+            <tr><td>Нажали «Забронировать»</td><td class="right">74</td><td class="right">41,57% от корзины</td></tr>
+            <tr><td>Получили результат заказа</td><td class="right">97</td><td class="right">по событию результата</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="s17" class="scenario">
+      <div class="scenario-head">
+        <div class="num">17</div>
+        <div><h3>Будильник приема лекарств</h3><p class="muted">Создание напоминания из карточки лекарства, истории или списка будильников.</p></div>
+        <div class="tag">Лекарства</div>
+      </div>
+      <div class="scenario-body">
+        <div class="story">User Story: как пользователь, я хочу поставить напоминание по лекарству, чтобы не пропустить прием.</div>
+        <table>
+          <thead><tr><th>Путь</th><th class="right">Сессии</th><th class="right">Конверсия</th></tr></thead>
+          <tbody>
+            <tr><td>Карточка лекарства с инструкцией</td><td class="right">61 731</td><td class="right">100%</td></tr>
+            <tr><td>Перешли к созданию будильника из карточки</td><td class="right">301</td><td class="right">0,49%</td></tr>
+            <tr><td>Открыли список будильников с главной</td><td class="right">2 969</td><td class="right">100%</td></tr>
+            <tr><td>Нажали добавить из списка будильников</td><td class="right">547</td><td class="right">18,42%</td></tr>
+            <tr><td>Перешли к будильнику из истории</td><td class="right">165</td><td class="right">самостоятельная точка входа</td></tr>
+            <tr><td>Перешли к сканированию из создания будильника</td><td class="right">253</td><td class="right">самостоятельная ветка</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="s18" class="scenario">
+      <div class="scenario-head">
+        <div class="num">18</div>
+        <div><h3>Напоминание об истечении срока годности</h3><p class="muted">Пользователь взаимодействует с напоминанием после проверки товара.</p></div>
+        <div class="tag">Лекарства</div>
+      </div>
+      <div class="scenario-body">
+        <div class="story">User Story: как пользователь, я хочу получить напоминание об истечении срока годности лекарства.</div>
+        <table>
+          <thead><tr><th>Шаг / действие</th><th class="right">Сессии</th></tr></thead>
+          <tbody>
+            <tr><td>Все события сценария срока годности</td><td class="right">13 086</td></tr>
+            <tr><td>Действие после сканирования</td><td class="right">12 204</td></tr>
+            <tr><td>Нажали кнопку напоминания</td><td class="right">8 807</td></tr>
+            <tr><td>Сработал таймер/установка таймера</td><td class="right">4 677</td></tr>
+            <tr><td>Кликнули push о сроке годности</td><td class="right">1 736</td></tr>
+          </tbody>
+        </table>
+        <p class="muted">Здесь события отражают не разные продуктовые цели, а разные технические точки одного сценария: нажатие кнопки, установка/срабатывание таймера и возврат из push. Для руководительской версии это лучше трактовать как один сценарий включения напоминания.</p>
+      </div>
+    </section>
+
+    <section id="s19" class="scenario">
+      <div class="scenario-head">
+        <div class="num">19</div>
+        <div><h3>Достижения</h3><p class="muted">Пользователь открывает достижение и переходит в действие из достижения.</p></div>
+        <div class="tag">Вовлечение</div>
+      </div>
+      <div class="scenario-body">
+        <div class="story">User Story: как пользователь, я хочу открыть конкретное достижение и перейти к действию, которое оно предлагает.</div>
+        <table>
+          <thead><tr><th>Шаг</th><th class="right">Сессии</th><th class="right">Конверсия</th></tr></thead>
+          <tbody>
+            <tr><td>Нажали на конкретное достижение</td><td class="right">122 643</td><td class="right">100%</td></tr>
+            <tr><td>Нажали действие, связанное с достижением</td><td class="right">22 008</td><td class="right">17,94%</td></tr>
+          </tbody>
+        </table>
+        <p class="muted">По документации <code>ACHIEVEMENTS_CLICK</code> уже означает клик на конкретную ачивку. Отдельное событие полного экрана относится к переходу в общий список достижений, поэтому шаг «детали достижения» убран как отдельный этап.</p>
+      </div>
+    </section>
+
+    <section id="s20" class="scenario">
+      <div class="scenario-head">
+        <div class="num">20</div>
+        <div><h3>Подарки</h3><p class="muted">Переход к подаркам из профиля и дальнейшее открытие раздела.</p></div>
+        <div class="tag">Вовлечение</div>
+      </div>
+      <div class="scenario-body">
+        <div class="story">User Story: как пользователь, я хочу открыть подарки из профиля и перейти к доступному предложению.</div>
+        <table>
+          <thead><tr><th>Шаг</th><th class="right">Сессии</th><th class="right">Конверсия</th></tr></thead>
+          <tbody>
+            <tr><td>Нажали «Подарки» с главного экрана</td><td class="right">12 948</td><td class="right">отдельная точка входа</td></tr>
+            <tr><td>Нажали «Подарки» из профиля</td><td class="right">3 042</td><td class="right">отдельная точка входа</td></tr>
+            <tr><td>Нажали на подарок/предложение</td><td class="right">10 153</td><td class="right">по событию клика</td></tr>
+            <tr><td>Открылся экран подарков</td><td class="right">3 529</td><td class="right">по screen_view</td></tr>
+            <tr><td>Открылся экран с объяснением получения подарка</td><td class="right">229</td><td class="right">6,49% от screen_view подарков</td></tr>
+          </tbody>
+        </table>
+        <p class="muted">Здесь события показывают несколько точек входа, а не одну строгую линейную воронку. Экран объяснения получения подарка встречается редко и, вероятно, относится к отдельному состоянию флоу.</p>
+      </div>
+    </section>
+
+    <section id="s21" class="scenario">
+      <div class="scenario-head">
+        <div class="num">21</div>
+        <div><h3>Сторис</h3><p class="muted">Просмотр сторис, свайпы, досмотры и переходы по кнопкам.</p></div>
+        <div class="tag">Контент</div>
+      </div>
+      <div class="scenario-body">
+        <div class="story">User Story: как пользователь, я хочу посмотреть сторис и перейти к полезной функции, если она мне интересна.</div>
+        <table>
+          <thead><tr><th>Точка входа</th><th class="right">Сессии</th><th class="right">Несколько сторис</th><th class="right">Досмотрели хотя бы одну</th><th class="right">Нажали кнопку</th></tr></thead>
+          <tbody>
+            <tr><td>Push</td><td class="right">27 224</td><td class="right">1 188 / 4,36%</td><td class="right">8 835 / 32,45%</td><td class="right">950 / 3,49%</td></tr>
+            <tr><td>Карусель на главной</td><td class="right">13 347</td><td class="right">8 064 / 60,42%</td><td class="right">6 401 / 47,96%</td><td class="right">1 310 / 9,81%</td></tr>
+            <tr><td>Не определено</td><td class="right">390</td><td class="right">26 / 6,67%</td><td class="right">81 / 20,77%</td><td class="right">5 / 1,28%</td></tr>
+          </tbody>
+        </table>
+        <p class="muted">«Нажали кнопку» — это переход по CTA внутри сторис, не лайк. Лайки/реакции считаются отдельным событием: 440 сессий из push и 436 сессий из карусели.</p>
+      </div>
+    </section>
+
+    <section id="s22" class="scenario">
+      <div class="scenario-head">
+        <div class="num">22</div>
+        <div><h3>Профиль</h3><p class="muted">Профиль как хаб для истории, подарков, помощи и настроек.</p></div>
+        <div class="tag">Хаб</div>
+      </div>
+      <div class="scenario-body">
+        <div class="story">User Story: как пользователь, я хочу из профиля быстро перейти к личным разделам и настройкам.</div>
+        <table>
+          <thead><tr><th>Действие после открытия профиля</th><th class="right">Сессии</th><th class="right">От открытий профиля</th></tr></thead>
+          <tbody>
+            <tr><td>Открыли профиль</td><td class="right">55 794</td><td class="right">100%</td></tr>
+            <tr><td>Перешли в историю</td><td class="right">9 776</td><td class="right">17,52%</td></tr>
+            <tr><td>Перешли в подарки</td><td class="right">10 407</td><td class="right">18,65%</td></tr>
+            <tr><td>Открыли помощь</td><td class="right">2 330</td><td class="right">4,18%</td></tr>
+            <tr><td>Открыли информацию</td><td class="right">2 452</td><td class="right">4,39%</td></tr>
+            <tr><td>Открыли настройку дислексии</td><td class="right">2 361</td><td class="right">4,23%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="s23" class="scenario">
+      <div class="scenario-head">
+        <div class="num">23</div>
+        <div><h3>Помощь и чат</h3><p class="muted">Переход в поддержку и открытие чата/экрана помощи.</p></div>
+        <div class="tag">Поддержка</div>
+      </div>
+      <div class="scenario-body">
+        <div class="story">User Story: как пользователь, я хочу быстро попасть в помощь, когда не понимаю, что делать дальше.</div>
+        <table>
+          <thead><tr><th>Шаг</th><th class="right">Сессии</th><th class="right">Конверсия</th></tr></thead>
+          <tbody>
+            <tr><td>Нажали «Помощь» в профиле</td><td class="right">2 566</td><td class="right">100%</td></tr>
+            <tr><td>После клика зафиксирован экран поддержки</td><td class="right">454</td><td class="right">17,69%</td></tr>
+            <tr><td>После клика зафиксирован вход в чат</td><td class="right">470</td><td class="right">18,32%</td></tr>
+          </tbody>
+        </table>
+        <p class="muted">Эту воронку нельзя считать надежной для вывода о продуктовой конверсии: если после «Помощи» всегда открывается следующий экран, то screen-событие поддержки фиксируется неполно или называется иначе. Для руководительского обсуждения лучше использовать этот блок как задачу на аудит разметки.</p>
+      </div>
+    </section>
+
+    <section id="s24" class="scenario">
+      <div class="scenario-head">
+        <div class="num">24</div>
+        <div><h3>Возврат к статусу жалобы</h3><p class="muted">Пользователь возвращается к уже созданной жалобе через пуши, этапы рассмотрения или переоткрытие.</p></div>
+        <div class="tag">Жалобы</div>
+      </div>
+      <div class="scenario-body">
+        <div class="story">User Story: как пользователь, я хочу понять, что происходит с моей жалобой после отправки.</div>
+        <table>
+          <thead><tr><th>Действие</th><th class="right">Сессии</th></tr></thead>
+          <tbody>
+            <tr><td>Клик по пушу об изменении статуса</td><td class="right">2 105</td></tr>
+            <tr><td>Открыли этапы рассмотрения</td><td class="right">1 009</td></tr>
+            <tr><td>Переоткрыли обычную жалобу</td><td class="right">823</td></tr>
+            <tr><td>Переоткрыли официальную жалобу</td><td class="right">240</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <h2>Приложение для проверки событий</h2>
+    <details>
+      <summary>Показать события, на которых построены сценарии</summary>
+      <p>Онбординг: <code>CONTINUE_BUTTON_CLICK</code>, <code>SKIP_BUTTON_CLICK</code>, <code>ENTER_BUTTON_CLICK</code>.</p>
+      <p>Авторизация: <code>LOGIN_CLICK</code>, <code>LOGIN_AUTH_TYPE_CLICK</code>, <code>GET_SMS</code>, <code>LOGIN_DONE</code>.</p>
+      <p>Сканирование: <code>SCAN_CLICK</code>, <code>SCAN_DM</code>, <code>SCAN_CIS_FOUND</code>, <code>SCAN_QR</code>, <code>SCAN_BAR</code>, события с признаком <code>DEFECT</code>.</p>
+      <p>Карточка товара: <code>PRICE_SHOW</code>, <code>PRICE_REGION_CLICK</code>, <code>NUTRITION_SHOW</code>, <code>NUTRITION_CLICK</code>, <code>NUTRITION_DETAILS_CLICK</code>, <code>NUTRITION_COMPONENT_CLICK</code>, <code>VET_CERTIFICATE_LINK</code>, <code>VET_CERTIFICATE_CLICK</code>, <code>DRUG_INSTRUCTION_LINK</code>, <code>DRUG_INSTRUCTION_CLICK</code>.</p>
+      <p>Жалобы: <code>REPORT_CLICK_FROM_MAIN</code>, <code>REPORT_CLICK</code>, <code>REPORT_KIND_CLICK</code>, <code>REPORT_CATEGORY_CLICK</code>, <code>REPORT_CAMERA_FURTHER_CLICK</code>, <code>REPORT_CAMERA_EXIT_CLICK</code>, <code>REPORT_DRAFT_CREATED_SAVE_CLICK</code>, <code>REPORT_DRAFT_SAVE_CLICK</code>, <code>REPORT_DRAFT_DELETE_CLICK</code>, <code>REPORT_DRAFT_NO_SAVE_CLICK</code>, <code>SEND_REPORT_PROGRESS</code>, <code>SEND_REPORT</code>, <code>REPORT_PUSH_CLICK</code>, <code>REPORT_STAGES_CLICK</code>, <code>REOPEN_REPORT</code>.</p>
+      <p>История: <code>HISTORY_CLICK</code>, <code>HISTORY_SHOW</code>, <code>HISTORY_ITEM_CLICK</code>, <code>HISTORY_FILTER_CLICK</code>, <code>HISTORY_DELETE_CLICK</code>.</p>
+      <p>Мои покупки: <code>PURCHASES_CLICK</code>, <code>PURCHASES_FISCAL_ADD_CLICK</code>, <code>FISCAL_TO_PRODUCT_CLICK</code>, <code>EXIT_FISCAL_SCREEN</code>, экраны <code>MyPurchasesViewController</code> и <code>ReceiptViewController</code>.</p>
+      <p>Лекарства: <code>DRUGS_RESERVE_FROM_MAIN</code>, <code>DRUGS_RESERVE_PICK_DRUG_FROM_LIST</code>, <code>DRUGS_RESERVE_AVAILABLE_FILTER</code>, <code>DRUGS_RESERVE_FROM_SHEET_TO_BASKET</code>, <code>DRUGS_RESERVE_ORDER_DONE</code>, <code>DRUGS_RESERVE_ORDER_RESULT</code>.</p>
+      <p>Будильник: <code>ALARM_LIST_FROM_MAIN</code>, <code>ALARM_FROM_CARD</code>, <code>ALARM_FROM_CARD_ANONYM</code>, <code>ALARM_FROM_HISTORY</code>, <code>ALARM_ADD_FROM_LIST_CLICK</code>, <code>ALARM_ADD_WITH_SCAN</code>.</p>
+      <p>Вовлечение: <code>ACHIEVEMENTS_CLICK</code>, <code>ACHIEVEMENTS_FULL_SCREEN_CLICK</code>, <code>ACHIEVEMENTS_ACTION_CLICK</code>, <code>PROFILE_GIFTS_CLICK</code>, <code>GIFTS_CLICK</code>, <code>STORY_VIEW</code>, <code>STORY_PAGE_VIEW</code>, <code>STORY_VIEW_COMPLETED</code>, <code>STORY_CLICK_BUTTON_ACTION</code>, <code>PROFILE_CLICK</code>, <code>PROFILE_HISTORY_CLICK</code>, <code>PROFILE_HELP_CLICK</code>, <code>CHAT_BOT_ENTRY</code>.</p>
+    </details>
+  </main>
+</body>
+</html>
