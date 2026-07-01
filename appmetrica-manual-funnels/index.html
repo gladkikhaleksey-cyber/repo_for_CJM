@@ -39,9 +39,6 @@
       border-bottom: 1px solid var(--line);
       background: rgba(255, 255, 255, 0.92);
       backdrop-filter: blur(8px);
-      position: sticky;
-      top: 0;
-      z-index: 20;
     }
 
     main {
@@ -75,6 +72,16 @@
       flex-wrap: wrap;
       gap: 12px;
       align-items: center;
+    }
+
+    .sticky-toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      padding: 12px 28px;
+      background: rgba(238, 243, 248, 0.94);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(215, 224, 235, 0.9);
     }
 
     .switcher,
@@ -127,7 +134,7 @@
     .summary {
       margin-top: 18px;
       display: grid;
-      grid-template-columns: repeat(4, minmax(180px, 1fr));
+      grid-template-columns: repeat(3, minmax(180px, 1fr));
       gap: 12px;
       max-width: 1180px;
     }
@@ -235,7 +242,7 @@
     .steps-panel,
     .period-panel,
     .data-note,
-    .events-panel {
+    .events-footer {
       background: var(--panel);
       border: 1px solid var(--line);
       border-radius: 14px;
@@ -262,28 +269,6 @@
 
     .steps-list li {
       margin-bottom: 8px;
-    }
-
-    .events-panel {
-      margin-top: 14px;
-      padding: 14px 16px;
-      background: linear-gradient(180deg, #fcfdff 0%, #f7fbff 100%);
-    }
-
-    .event-list {
-      margin: 0;
-      padding-left: 18px;
-      color: #344054;
-      font-size: 13px;
-    }
-
-    .event-list li {
-      margin-bottom: 7px;
-    }
-
-    .event-list code {
-      color: var(--blue);
-      font-weight: 700;
     }
 
     .period-grid {
@@ -318,12 +303,12 @@
     .metric-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 13px;
+      font-size: 15px;
     }
 
     .metric-table th,
     .metric-table td {
-      padding: 9px 10px;
+      padding: 11px 12px;
       border-bottom: 1px solid #e8eef5;
       vertical-align: top;
       text-align: left;
@@ -332,7 +317,7 @@
     .metric-table th {
       background: #fbfdff;
       color: #475467;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 700;
     }
 
@@ -355,7 +340,8 @@
     .count {
       display: block;
       color: #667085;
-      margin-top: 2px;
+      margin-top: 3px;
+      font-size: 14px;
     }
 
     .missing {
@@ -375,10 +361,54 @@
       color: #253a57;
     }
 
+    .events-footer {
+      max-width: 1360px;
+      margin-top: 24px;
+      padding: 16px 18px;
+    }
+
+    .events-columns {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px 18px;
+    }
+
+    .events-group {
+      padding: 12px 14px;
+      background: #fbfdff;
+      border: 1px solid #e8eef5;
+      border-radius: 12px;
+    }
+
+    .events-group strong {
+      display: block;
+      margin-bottom: 8px;
+      color: #223a59;
+      font-size: 14px;
+    }
+
+    .events-group ul {
+      margin: 0;
+      padding-left: 18px;
+      color: #344054;
+      font-size: 14px;
+    }
+
+    .events-group li {
+      margin-bottom: 7px;
+    }
+
+    .events-group code {
+      color: var(--blue);
+      font-weight: 700;
+    }
+
     @media (max-width: 1180px) {
       .summary,
       .toc,
-      .period-grid {
+      .period-grid,
+      .events-columns {
         grid-template-columns: 1fr;
       }
 
@@ -402,13 +432,6 @@
       остальные можно будет добавить позже в эту же структуру.
     </p>
     <div class="topbar">
-      <div class="switcher">
-        <div class="switcher-label">Канал</div>
-        <div class="switcher-buttons">
-          <button class="active" data-channel="organic">Органика</button>
-          <button data-channel="performance">Перформ</button>
-        </div>
-      </div>
       <div class="note-chip">
         Декабрь: <strong>2025-12-05 — 2025-12-17</strong>. Май: <strong>2026-05-09 — 2026-05-21</strong>.
         Если события отсутствуют, это показано как отсутствие трекинга, а не нулевая конверсия.
@@ -418,9 +441,17 @@
       <div class="summary-card"><strong>6</strong><span>сценариев уже внесено</span></div>
       <div class="summary-card"><strong>2</strong><span>канала сравнения: organic / performance</span></div>
       <div class="summary-card"><strong>2</strong><span>периода: декабрь и май</span></div>
-      <div class="summary-card"><strong>real events</strong><span>шаги совпадают с текущей документацией</span></div>
     </div>
   </header>
+  <div class="sticky-toolbar">
+    <div class="switcher">
+      <div class="switcher-label">Канал</div>
+      <div class="switcher-buttons">
+        <button class="active" data-channel="organic">Органика</button>
+        <button data-channel="performance">Перформ</button>
+      </div>
+    </div>
+  </div>
   <main>
     <nav class="toc">
       <a href="#scenario-1">Сценарий 1. Онбординг</a>
@@ -438,7 +469,7 @@
         id: 1,
         slug: "scenario-1",
         title: "Онбординг: прохождение по экранам",
-        tags: ["Сценарий 1", "real events", "manual funnel"],
+        tags: ["Сценарий 1", "manual funnel"],
         steps: [
           "Старт онбординга",
           "Нажали “Далее” на экране 1",
@@ -858,12 +889,6 @@
                 <ol class="steps-list">
                   ${scenario.steps.map((step) => `<li>${step}</li>`).join("")}
                 </ol>
-                <div class="events-panel">
-                  <div class="panel-title">События</div>
-                  <ul class="event-list">
-                    ${scenario.events.map((event) => `<li>${event}</li>`).join("")}
-                  </ul>
-                </div>
                 ${scenario.note ? `<div class="data-note" style="margin-top:14px;"><strong>Примечание.</strong> ${scenario.note}</div>` : ""}
               </div>
               <div>
@@ -878,6 +903,24 @@
       }).join("");
     }
 
+    function renderEventsFooter() {
+      return `
+        <section class="events-footer">
+          <div class="panel-title">События по сценариям</div>
+          <div class="events-columns">
+            ${scenarios.map((scenario) => `
+              <div class="events-group">
+                <strong>Сценарий ${scenario.id}. ${scenario.title}</strong>
+                <ul>
+                  ${scenario.events.map((event) => `<li>${event}</li>`).join("")}
+                </ul>
+              </div>
+            `).join("")}
+          </div>
+        </section>
+      `;
+    }
+
     buttons.forEach((button) => {
       button.addEventListener("click", () => {
         activeChannel = button.dataset.channel;
@@ -887,6 +930,7 @@
     });
 
     render();
+    root.insertAdjacentHTML("afterend", renderEventsFooter());
   </script>
 </body>
 </html>
