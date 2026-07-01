@@ -1,0 +1,892 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ручные воронки AppMetrica</title>
+  <style>
+    :root {
+      --bg: #eef3f8;
+      --panel: #ffffff;
+      --panel-soft: #f7fbff;
+      --ink: #162033;
+      --muted: #667085;
+      --line: #d7e0eb;
+      --blue: #1f5f9e;
+      --blue-soft: #e9f2ff;
+      --green: #176448;
+      --green-soft: #eaf8f1;
+      --amber: #946200;
+      --amber-soft: #fff6df;
+      --rose: #a33a52;
+      --rose-soft: #fff4f6;
+      --shadow: 0 12px 28px rgba(19, 31, 52, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(31, 95, 158, 0.12), transparent 28%),
+        linear-gradient(180deg, #f7fbff 0%, var(--bg) 100%);
+      color: var(--ink);
+      line-height: 1.45;
+    }
+
+    header {
+      padding: 28px 28px 22px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    main {
+      padding: 24px 28px 56px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+    }
+
+    h2 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      color: #223a59;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    .lead {
+      max-width: 1180px;
+      color: #344054;
+      font-size: 15px;
+    }
+
+    .topbar {
+      margin-top: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .switcher,
+    .note-chip {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      box-shadow: var(--shadow);
+    }
+
+    .switcher-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .switcher-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .switcher button {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: #334155;
+      border-radius: 9px;
+      padding: 9px 14px;
+      cursor: pointer;
+      font-size: 14px;
+      min-width: 118px;
+    }
+
+    .switcher button.active {
+      background: var(--blue-soft);
+      color: var(--blue);
+      border-color: #bfd5f4;
+      font-weight: 700;
+    }
+
+    .note-chip {
+      padding: 12px 14px;
+      color: #475467;
+      font-size: 13px;
+      max-width: 700px;
+    }
+
+    .summary {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(180px, 1fr));
+      gap: 12px;
+      max-width: 1180px;
+    }
+
+    .summary-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .summary-card strong {
+      display: block;
+      font-size: 24px;
+      color: var(--blue);
+      margin-bottom: 4px;
+    }
+
+    .toc {
+      margin: 24px 0 28px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(260px, 1fr));
+      gap: 10px;
+      max-width: 1280px;
+    }
+
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--blue);
+      background: rgba(255, 255, 255, 0.84);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 11px 12px;
+      box-shadow: var(--shadow);
+      font-size: 13px;
+    }
+
+    .scenario {
+      max-width: 1360px;
+      margin-bottom: 18px;
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .scenario-head {
+      display: grid;
+      grid-template-columns: 82px 1fr 280px;
+      gap: 14px;
+      padding: 18px;
+      background: linear-gradient(135deg, #f7fbff 0%, #ffffff 100%);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .scenario-num {
+      width: 58px;
+      height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .scenario-sub {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .tagbox {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-content: start;
+      justify-content: flex-end;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: #344054;
+    }
+
+    .scenario-body {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 18px;
+    }
+
+    .steps-panel,
+    .period-panel,
+    .data-note,
+    .events-panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+    }
+
+    .steps-panel {
+      padding: 15px 16px;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+    }
+
+    .panel-title {
+      margin-bottom: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+    }
+
+    .steps-list {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .steps-list li {
+      margin-bottom: 8px;
+    }
+
+    .events-panel {
+      margin-top: 14px;
+      padding: 14px 16px;
+      background: linear-gradient(180deg, #fcfdff 0%, #f7fbff 100%);
+    }
+
+    .event-list {
+      margin: 0;
+      padding-left: 18px;
+      color: #344054;
+      font-size: 13px;
+    }
+
+    .event-list li {
+      margin-bottom: 7px;
+    }
+
+    .event-list code {
+      color: var(--blue);
+      font-weight: 700;
+    }
+
+    .period-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .period-panel {
+      overflow: hidden;
+    }
+
+    .period-head {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel-soft);
+    }
+
+    .period-head strong {
+      display: block;
+      font-size: 17px;
+      color: #22456d;
+    }
+
+    .period-head span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .metric-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .metric-table th,
+    .metric-table td {
+      padding: 9px 10px;
+      border-bottom: 1px solid #e8eef5;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    .metric-table th {
+      background: #fbfdff;
+      color: #475467;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .segment-name {
+      font-weight: 700;
+      color: #24364f;
+      white-space: nowrap;
+    }
+
+    .value {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .percent {
+      display: block;
+      color: #344054;
+      font-weight: 700;
+    }
+
+    .count {
+      display: block;
+      color: #667085;
+      margin-top: 2px;
+    }
+
+    .missing {
+      color: var(--amber);
+      font-weight: 700;
+    }
+
+    .data-note {
+      margin-top: 14px;
+      padding: 12px 14px;
+      background: #fff;
+      color: #475467;
+      font-size: 12px;
+    }
+
+    .data-note strong {
+      color: #253a57;
+    }
+
+    @media (max-width: 1180px) {
+      .summary,
+      .toc,
+      .period-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .scenario-head,
+      .scenario-body {
+        grid-template-columns: 1fr;
+      }
+
+      .tagbox {
+        justify-content: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Ручные воронки AppMetrica</h1>
+    <p class="lead">
+      Отдельная витрина по ручным воронкам AppMetrica на реальных событиях. Шаги подписаны так же, как в
+      <code>APPMETRICA_MANUAL_FUNNELS_REAL_EVENTS.md</code>. Сейчас на странице только уже собранные сценарии;
+      остальные можно будет добавить позже в эту же структуру.
+    </p>
+    <div class="topbar">
+      <div class="switcher">
+        <div class="switcher-label">Канал</div>
+        <div class="switcher-buttons">
+          <button class="active" data-channel="organic">Органика</button>
+          <button data-channel="performance">Перформ</button>
+        </div>
+      </div>
+      <div class="note-chip">
+        Декабрь: <strong>2025-12-05 — 2025-12-17</strong>. Май: <strong>2026-05-09 — 2026-05-21</strong>.
+        Если события отсутствуют, это показано как отсутствие трекинга, а не нулевая конверсия.
+      </div>
+    </div>
+    <div class="summary">
+      <div class="summary-card"><strong>6</strong><span>сценариев уже внесено</span></div>
+      <div class="summary-card"><strong>2</strong><span>канала сравнения: organic / performance</span></div>
+      <div class="summary-card"><strong>2</strong><span>периода: декабрь и май</span></div>
+      <div class="summary-card"><strong>real events</strong><span>шаги совпадают с текущей документацией</span></div>
+    </div>
+  </header>
+  <main>
+    <nav class="toc">
+      <a href="#scenario-1">Сценарий 1. Онбординг</a>
+      <a href="#scenario-2">Сценарий 2. Авторизация: базовая</a>
+      <a href="#scenario-5">Сценарий 5. Сканирование: найден товар</a>
+      <a href="#scenario-6">Сценарий 6. Сканирование: не найден товар</a>
+      <a href="#scenario-7">Сценарий 7. Сканирование: QR</a>
+      <a href="#scenario-14">Сценарий 14. Жалоба с главной</a>
+    </nav>
+    <div id="scenarios-root"></div>
+  </main>
+  <script>
+    const scenarios = [
+      {
+        id: 1,
+        slug: "scenario-1",
+        title: "Онбординг: прохождение по экранам",
+        tags: ["Сценарий 1", "real events", "manual funnel"],
+        steps: [
+          "Старт онбординга",
+          "Нажали “Далее” на экране 1",
+          "Нажали “Далее” на экране 2",
+          "Нажали “Далее” на экране 3",
+          "Нажали “Готово”"
+        ],
+        events: [
+          "Старт онбординга: <code>CONTINUE_BUTTON_CLICK</code> ИЛИ <code>SKIP_BUTTON_CLICK</code> ИЛИ <code>ENTER_BUTTON_CLICK</code>",
+          "Экран 1: <code>CONTINUE_BUTTON_CLICK</code> + <code>SCREEN_NUMBER = 1</code>",
+          "Экран 2: <code>CONTINUE_BUTTON_CLICK</code> + <code>SCREEN_NUMBER = 2</code>",
+          "Экран 3: <code>CONTINUE_BUTTON_CLICK</code> + <code>SCREEN_NUMBER = 3</code>",
+          "Готово: <code>ENTER_BUTTON_CLICK</code>"
+        ],
+        periods: {
+          organic: {
+            dec: {
+              label: "Декабрь 2025",
+              range: "2025-12-05 — 2025-12-17",
+              rows: [
+                { segment: "Всего", values: [["100%", "114 682"], ["26,46%", "30 349"], ["24,2%", "27 752"], ["23,2%", "26 603"], ["22,87%", "26 226"]] },
+                { segment: "Новые", values: [["100%", "102 018"], ["26,48%", "27 011"], ["24,4%", "24 893"], ["23,5%", "23 975"], ["23,25%", "23 724"]] },
+                { segment: "Вернувшиеся", values: [["100%", "12 664"], ["26,36%", "3 338"], ["22,58%", "2 859"], ["20,75%", "2 628"], ["19,76%", "2 502"]] }
+              ]
+            },
+            may: {
+              label: "Май 2026",
+              range: "2026-05-09 — 2026-05-21",
+              missing: "В AppMetrica нет событий онбординга за этот период. Вероятно, трекинг был выпилен или отключен."
+            }
+          },
+          performance: {
+            dec: {
+              label: "Декабрь 2025",
+              range: "2025-12-05 — 2025-12-17",
+              rows: [
+                { segment: "Всего", values: [["100%", "48 945"], ["32,4%", "15 859"], ["30,14%", "14 753"], ["29,05%", "14 220"], ["28,75%", "14 072"]] },
+                { segment: "Новые", values: [["100%", "46 018"], ["32,62%", "15 010"], ["30,45%", "14 011"], ["29,41%", "13 532"], ["29,16%", "13 417"]] },
+                { segment: "Вернувшиеся", values: [["100%", "2 927"], ["29,01%", "849"], ["25,35%", "742"], ["23,51%", "688"], ["22,38%", "655"]] }
+              ]
+            },
+            may: {
+              label: "Май 2026",
+              range: "2026-05-09 — 2026-05-21",
+              missing: "В AppMetrica нет событий онбординга за этот период. Вероятно, трекинг был выпилен или отключен."
+            }
+          }
+        }
+      },
+      {
+        id: 2,
+        slug: "scenario-2",
+        title: "Авторизация: базовая",
+        tags: ["Сценарий 2", "LOGIN_CLICK", "LOGIN_DONE"],
+        steps: [
+          "Подняли шторку авторизации",
+          "Выбрали способ авторизации",
+          "Успешно авторизовались"
+        ],
+        events: [
+          "Шаг 1: <code>LOGIN_CLICK</code>",
+          "Шаг 2: <code>LOGIN_AUTH_TYPE_CLICK</code>",
+          "Шаг 3: <code>LOGIN_DONE</code>"
+        ],
+        periods: {
+          organic: {
+            dec: {
+              label: "Декабрь 2025",
+              range: "2025-12-05 — 2025-12-17",
+              rows: [
+                { segment: "Всего", values: [["100%", "75 640"], ["68,7%", "51 964"], ["54,89%", "41 518"]] },
+                { segment: "Новые", values: [["100%", "41 648"], ["80,83%", "33 666"], ["69,29%", "28 857"]] },
+                { segment: "Вернувшиеся", values: [["100%", "33 992"], ["53,83%", "18 298"], ["37,25%", "12 661"]] }
+              ]
+            },
+            may: {
+              label: "Май 2026",
+              range: "2026-05-09 — 2026-05-21",
+              rows: [
+                { segment: "Всего", values: [["100%", "75 721"], ["70,8%", "53 607"], ["58,47%", "44 275"]] },
+                { segment: "Новые", values: [["100%", "45 930"], ["81,65%", "37 501"], ["71,98%", "33 061"]] },
+                { segment: "Вернувшиеся", values: [["100%", "29 791"], ["54,06%", "16 106"], ["37,64%", "11 214"]] }
+              ]
+            }
+          },
+          performance: {
+            dec: {
+              label: "Декабрь 2025",
+              range: "2025-12-05 — 2025-12-17",
+              rows: [
+                { segment: "Всего", values: [["100%", "24 888"], ["75,11%", "18 693"], ["63,75%", "15 867"]] },
+                { segment: "Новые", values: [["100%", "18 931"], ["81%", "15 335"], ["71,16%", "13 472"]] },
+                { segment: "Вернувшиеся", values: [["100%", "5 957"], ["56,37%", "3 358"], ["40,2%", "2 395"]] }
+              ]
+            },
+            may: {
+              label: "Май 2026",
+              range: "2026-05-09 — 2026-05-21",
+              rows: [
+                { segment: "Всего", values: [["100%", "9 868"], ["70,99%", "7 005"], ["59,19%", "5 841"]] },
+                { segment: "Новые", values: [["100%", "5 938"], ["81,22%", "4 823"], ["72,09%", "4 281"]] },
+                { segment: "Вернувшиеся", values: [["100%", "3 930"], ["55,52%", "2 182"], ["39,69%", "~1 560"]] }
+              ]
+            }
+          }
+        },
+        note: "Для performance / май у вернувшихся пользователей последнее абсолютное значение восстановлено по проценту как приблизительное."
+      },
+      {
+        id: 5,
+        slug: "scenario-5",
+        title: "Сканирование: вход в DM-сканер и успешный результат",
+        tags: ["Сценарий 5", "SCAN_DM", "CODE_FOUND = TRUE"],
+        steps: [
+          "Открыли сканирование",
+          "Открыли экран DM-сканера",
+          "Получили результат проверки КМ",
+          "Нашли товар"
+        ],
+        events: [
+          "Шаг 1: <code>SCAN_CLICK</code>",
+          "Шаг 2: <code>DM_SCREEN</code>",
+          "Шаг 3: <code>SCAN_DM</code>",
+          "Шаг 4: <code>SCAN_DM</code> + <code>CODE_FOUND = TRUE</code> ИЛИ <code>SCAN_CIS_FOUND</code>"
+        ],
+        periods: {
+          organic: {
+            dec: {
+              label: "Декабрь 2025",
+              range: "2025-12-05 — 2025-12-17",
+              rows: [
+                { segment: "Всего", values: [["100%", "562 075"], ["91,72%", "515 542"], ["72,79%", "409 117"], ["70,49%", "396 216"]] },
+                { segment: "Новые", values: [["100%", "86 851"], ["97,05%", "84 285"], ["71,41%", "62 023"], ["68,66%", "59 630"]] },
+                { segment: "Вернувшиеся", values: [["100%", "475 224"], ["90,75%", "431 257"], ["73,04%", "347 094"], ["70,83%", "336 586"]] }
+              ]
+            },
+            may: {
+              label: "Май 2026",
+              range: "2026-05-09 — 2026-05-21",
+              rows: [
+                { segment: "Всего", values: [["100%", "590 588"], ["98,81%", "583 577"], ["81,17%", "479 377"], ["78,99%", "466 515"]] },
+                { segment: "Новые", values: [["100%", "102 308"], ["98,98%", "101 260"], ["75,63%", "77 380"], ["72,9%", "74 580"]] },
+                { segment: "Вернувшиеся", values: [["100%", "488 280"], ["98,78%", "482 317"], ["82,33%", "401 997"], ["80,27%", "391 935"]] }
+              ]
+            }
+          },
+          performance: {
+            dec: {
+              label: "Декабрь 2025",
+              range: "2025-12-05 — 2025-12-17",
+              rows: [
+                { segment: "Всего", values: [["100%", "95 054"], ["92,25%", "87 692"], ["70,68%", "67 182"], ["68,28%", "64 906"]] },
+                { segment: "Новые", values: [["100%", "37 027"], ["96,56%", "35 755"], ["72,06%", "26 682"], ["69,34%", "25 673"]] },
+                { segment: "Вернувшиеся", values: [["100%", "58 027"], ["89,5%", "51 937"], ["69,8%", "40 500"], ["67,61%", "39 233"]] }
+              ]
+            },
+            may: {
+              label: "Май 2026",
+              range: "2026-05-09 — 2026-05-21",
+              rows: [
+                { segment: "Всего", values: [["100%", "77 240"], ["98,49%", "76 073"], ["78,85%", "60 907"], ["76,37%", "58 992"]] },
+                { segment: "Новые", values: [["100%", "12 706"], ["98,45%", "12 509"], ["70,45%", "8 951"], ["66,54%", "8 455"]] },
+                { segment: "Вернувшиеся", values: [["100%", "64 534"], ["98,5%", "63 564"], ["80,51%", "51 956"], ["78,31%", "50 537"]] }
+              ]
+            }
+          }
+        }
+      },
+      {
+        id: 6,
+        slug: "scenario-6",
+        title: "Сканирование: не найден товар",
+        tags: ["Сценарий 6", "CODE_FOUND = FALSE", "negative path"],
+        steps: [
+          "Открыли сканирование",
+          "Открыли экран DM-сканера",
+          "Не найден товар"
+        ],
+        events: [
+          "Шаг 1: <code>SCAN_CLICK</code>",
+          "Шаг 2: <code>DM_SCREEN</code>",
+          "Шаг 3: <code>SCAN_DM</code> + <code>CODE_FOUND = FALSE</code>"
+        ],
+        periods: {
+          organic: {
+            dec: {
+              label: "Декабрь 2025",
+              range: "2025-12-05 — 2025-12-17",
+              rows: [
+                { segment: "Всего", values: [["100%", "562 075"], ["91,72%", "515 542"], ["6,14%", "34 494"]] },
+                { segment: "Новые", values: [["100%", "86 851"], ["97,05%", "84 285"], ["6,98%", "~6 062"]] },
+                { segment: "Вернувшиеся", values: [["100%", "475 224"], ["90,75%", "431 257"], ["5,98%", "28 432"]] }
+              ]
+            },
+            may: {
+              label: "Май 2026",
+              range: "2026-05-09 — 2026-05-21",
+              rows: [
+                { segment: "Всего", values: [["100%", "590 588"], ["98,81%", "583 577"], ["6,83%", "40 332"]] },
+                { segment: "Новые", values: [["100%", "102 308"], ["98,98%", "101 260"], ["8,98%", "9 191"]] },
+                { segment: "Вернувшиеся", values: [["100%", "488 280"], ["98,78%", "482 317"], ["6,38%", "31 141"]] }
+              ]
+            }
+          },
+          performance: {
+            dec: {
+              label: "Декабрь 2025",
+              range: "2025-12-05 — 2025-12-17",
+              rows: [
+                { segment: "Всего", values: [["100%", "90 996"], ["92,32%", "84 008"], ["9,93%", "9 038"]] },
+                { segment: "Новые", values: [["100%", "36 258"], ["96,54%", "35 002"], ["11,08%", "4 018"]] },
+                { segment: "Вернувшиеся", values: [["100%", "54 738"], ["89,53%", "49 006"], ["9,17%", "5 020"]] }
+              ]
+            },
+            may: {
+              label: "Май 2026",
+              range: "2026-05-09 — 2026-05-21",
+              rows: [
+                { segment: "Всего", values: [["100%", "60 703"], ["98,59%", "59 849"], ["9,31%", "5 651"]] },
+                { segment: "Новые", values: [["100%", "12 934"], ["98,47%", "12 736"], ["11,09%", "~1 434"]] },
+                { segment: "Вернувшиеся", values: [["100%", "47 769"], ["98,63%", "47 113"], ["8,83%", "4 216"]] }
+              ]
+            }
+          }
+        },
+        note: "Часть абсолютных значений для новых пользователей восстановлена приблизительно по проценту, потому что в исходной ручной выгрузке число было обрезано."
+      },
+      {
+        id: 7,
+        slug: "scenario-7",
+        title: "Сканирование: QR как альтернативный результат",
+        tags: ["Сценарий 7", "SCAN_QR", "alternative path"],
+        steps: [
+          "Открыли сканирование",
+          "Открыли экран DM-сканера",
+          "Получили QR-результат"
+        ],
+        events: [
+          "Шаг 1: <code>SCAN_CLICK</code>",
+          "Шаг 2: <code>DM_SCREEN</code>",
+          "Шаг 3: <code>SCAN_QR</code>"
+        ],
+        periods: {
+          organic: {
+            dec: {
+              label: "Декабрь 2025",
+              range: "2025-12-05 — 2025-12-17",
+              rows: [
+                { segment: "Всего", values: [["100%", "562 075"], ["91,72%", "515 542"], ["6,49%", "36 491"]] },
+                { segment: "Новые", values: [["100%", "86 851"], ["97,05%", "84 285"], ["7,22%", "~6 270"]] },
+                { segment: "Вернувшиеся", values: [["100%", "475 224"], ["90,75%", "431 257"], ["6,36%", "30 221"]] }
+              ]
+            },
+            may: {
+              label: "Май 2026",
+              range: "2026-05-09 — 2026-05-21",
+              rows: [
+                { segment: "Всего", values: [["100%", "590 588"], ["98,81%", "583 577"], ["6,64%", "39 206"]] },
+                { segment: "Новые", values: [["100%", "102 308"], ["98,98%", "101 260"], ["7,2%", "~7 366"]] },
+                { segment: "Вернувшиеся", values: [["100%", "488 280"], ["98,78%", "482 317"], ["6,52%", "31 841"]] }
+              ]
+            }
+          },
+          performance: {
+            dec: {
+              label: "Декабрь 2025",
+              range: "2025-12-05 — 2025-12-17",
+              rows: [
+                { segment: "Всего", values: [["100%", "90 996"], ["92,32%", "84 008"], ["7,62%", "6 936"]] },
+                { segment: "Новые", values: [["100%", "36 258"], ["96,54%", "35 002"], ["7,83%", "~2 839"]] },
+                { segment: "Вернувшиеся", values: [["100%", "54 738"], ["89,53%", "49 006"], ["7,48%", "4 097"]] }
+              ]
+            },
+            may: {
+              label: "Май 2026",
+              range: "2026-05-09 — 2026-05-21",
+              rows: [
+                { segment: "Всего", values: [["100%", "60 703"], ["98,59%", "59 849"], ["6,87%", "4 173"]] },
+                { segment: "Новые", values: [["100%", "12 934"], ["98,47%", "12 736"], ["7,45%", "964"]] },
+                { segment: "Вернувшиеся", values: [["100%", "47 769"], ["98,63%", "47 113"], ["6,72%", "3 209"]] }
+              ]
+            }
+          }
+        },
+        note: "Несколько абсолютных значений у новых пользователей в декабре/мае были обрезаны в ручной передаче и здесь восстановлены как приблизительные."
+      },
+      {
+        id: 14,
+        slug: "scenario-14",
+        title: "Жалоба с главной",
+        tags: ["Сценарий 14", "REPORT_CLICK_FROM_MAIN", "SEND_REPORT"],
+        steps: [
+          "Вошли в жалобу с главной",
+          "Выбрали вид нарушения",
+          "Отправили жалобу"
+        ],
+        events: [
+          "Шаг 1: <code>REPORT_CLICK_FROM_MAIN</code>",
+          "Шаг 2: <code>REPORT_KIND_CLICK</code>",
+          "Шаг 3: <code>SEND_REPORT</code> ИЛИ <code>SEND_OFFICIAL_REPORT</code>"
+        ],
+        periods: {
+          organic: {
+            dec: {
+              label: "Декабрь 2025",
+              range: "2025-12-05 — 2025-12-17",
+              rows: [
+                { segment: "Всего", values: [["100%", "50 051"], ["17,4%", "8 710"], ["1,26%", "629"]] },
+                { segment: "Новые", values: [["100%", "8 646"], ["22,18%", "1 918"], ["1,27%", "110"]] },
+                { segment: "Вернувшиеся", values: [["100%", "41 405"], ["16,4%", "6 792"], ["1,25%", "519"]] }
+              ]
+            },
+            may: {
+              label: "Май 2026",
+              range: "2026-05-09 — 2026-05-21",
+              rows: [
+                { segment: "Всего", values: [["100%", "73 373"], ["15,05%", "11 046"], ["0,88%", "649"]] },
+                { segment: "Новые", values: [["100%", "14 893"], ["19,38%", "2 886"], ["1,13%", "?"]] },
+                { segment: "Вернувшиеся", values: [["100%", "58 480"], ["13,95%", "8 160"], ["0,82%", "481"]] }
+              ]
+            }
+          },
+          performance: {
+            dec: {
+              label: "Декабрь 2025",
+              range: "2025-12-05 — 2025-12-17",
+              rows: [
+                { segment: "Всего", values: [["100%", "9 658"], ["21,08%", "2 036"], ["1,25%", "121"]] },
+                { segment: "Новые", values: [["100%", "4 108"], ["24,83%", "1 020"], ["1,31%", "~54"]] },
+                { segment: "Вернувшиеся", values: [["100%", "5 550"], ["18,31%", "1 016"], ["1,21%", "67"]] }
+              ]
+            },
+            may: {
+              label: "Май 2026",
+              range: "2026-05-09 — 2026-05-21",
+              rows: [
+                { segment: "Всего", values: [["100%", "10 579"], ["15,93%", "1 685"], ["0,8%", "85"]] },
+                { segment: "Новые", values: [["100%", "1 935"], ["20,36%", "394"], ["1,03%", "~20"]] },
+                { segment: "Вернувшиеся", values: [["100%", "8 644"], ["14,94%", "1 291"], ["0,75%", "65"]] }
+              ]
+            }
+          }
+        },
+        note: "Для части новых пользователей абсолютные значения на шаге отправки либо были обрезаны, либо противоречили проценту. В таких местах стоит отдельная пометка: приблизительное значение или знак вопроса."
+      }
+    ];
+
+    const root = document.getElementById("scenarios-root");
+    const buttons = [...document.querySelectorAll("[data-channel]")];
+    let activeChannel = "organic";
+
+    function renderScenarioTable(period) {
+      if (period.missing) {
+        return `
+          <div class="period-panel">
+            <div class="period-head">
+              <strong>${period.label}</strong>
+              <span>${period.range}</span>
+            </div>
+            <div class="data-note">
+              <span class="missing">Нет данных.</span> ${period.missing}
+            </div>
+          </div>
+        `;
+      }
+
+      const headers = period.rows[0].values.map((_, index) => `<th>Шаг ${index + 1}</th>`).join("");
+      const rows = period.rows.map((row) => `
+        <tr>
+          <td class="segment-name">${row.segment}</td>
+          ${row.values.map((value) => `
+            <td class="value">
+              <span class="percent">${value[0]}</span>
+              <span class="count">${value[1]}</span>
+            </td>
+          `).join("")}
+        </tr>
+      `).join("");
+
+      return `
+        <div class="period-panel">
+          <div class="period-head">
+            <strong>${period.label}</strong>
+            <span>${period.range}</span>
+          </div>
+          <table class="metric-table">
+            <thead>
+              <tr>
+                <th>Срез</th>
+                ${headers}
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function render() {
+      root.innerHTML = scenarios.map((scenario) => {
+        const periods = scenario.periods[activeChannel];
+        return `
+          <section class="scenario" id="${scenario.slug}">
+            <div class="scenario-head">
+              <div class="scenario-num">${scenario.id}</div>
+              <div>
+                <h2>${scenario.title}</h2>
+                <p class="scenario-sub">Канал: <strong>${activeChannel === "organic" ? "Органика" : "Перформ"}</strong></p>
+              </div>
+              <div class="tagbox">
+                ${scenario.tags.map((tag) => `<span class="tag">${tag}</span>`).join("")}
+              </div>
+            </div>
+            <div class="scenario-body">
+              <div class="steps-panel">
+                <div class="panel-title">Шаги по документации</div>
+                <ol class="steps-list">
+                  ${scenario.steps.map((step) => `<li>${step}</li>`).join("")}
+                </ol>
+                <div class="events-panel">
+                  <div class="panel-title">События</div>
+                  <ul class="event-list">
+                    ${scenario.events.map((event) => `<li>${event}</li>`).join("")}
+                  </ul>
+                </div>
+                ${scenario.note ? `<div class="data-note" style="margin-top:14px;"><strong>Примечание.</strong> ${scenario.note}</div>` : ""}
+              </div>
+              <div>
+                <div class="period-grid">
+                  ${renderScenarioTable(periods.dec)}
+                  ${renderScenarioTable(periods.may)}
+                </div>
+              </div>
+            </div>
+          </section>
+        `;
+      }).join("");
+    }
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        activeChannel = button.dataset.channel;
+        buttons.forEach((item) => item.classList.toggle("active", item === button));
+        render();
+      });
+    });
+
+    render();
+  </script>
+</body>
+</html>
