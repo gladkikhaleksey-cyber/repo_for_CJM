@@ -1,0 +1,691 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Воронка жалоб Честного ЗНАКа</title>
+  <script src="./data.js"></script>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --panel: #ffffff;
+      --panel-soft: #f9fafb;
+      --ink: #182230;
+      --muted: #667085;
+      --line: #d6dde6;
+      --blue: #1e5f9a;
+      --blue-soft: #e8f2fb;
+      --green: #18715a;
+      --green-soft: #e5f5ef;
+      --amber: #9a6700;
+      --amber-soft: #fff4d8;
+      --red: #b42318;
+      --red-soft: #fde8e7;
+      --violet: #6741a0;
+      --violet-soft: #f0eafa;
+      --shadow: 0 14px 36px rgba(16, 24, 40, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--bg);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.35;
+    }
+
+    header {
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+      padding: 22px 28px 18px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      letter-spacing: 0;
+    }
+
+    .subhead {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    main {
+      padding: 22px 28px 40px;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: minmax(230px, 0.8fr) minmax(230px, 0.8fr) minmax(320px, 1.4fr);
+      gap: 12px;
+      max-width: 1440px;
+      margin-bottom: 16px;
+    }
+
+    .filter-card,
+    .summary-card,
+    .funnel-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .filter-card {
+      padding: 12px;
+      min-width: 0;
+    }
+
+    .filter-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .filter-title {
+      margin: 0;
+      color: #344054;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .clear-button,
+    .reset-button {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: #344054;
+      border-radius: 7px;
+      padding: 7px 9px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .reset-button {
+      color: var(--blue);
+      border-color: #bdd3e8;
+      background: var(--blue-soft);
+      font-weight: 700;
+    }
+
+    .chip-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      max-height: 168px;
+      overflow: auto;
+      padding-right: 2px;
+    }
+
+    .chip {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: #344054;
+      border-radius: 999px;
+      padding: 8px 10px;
+      font-size: 13px;
+      cursor: pointer;
+      min-height: 34px;
+      text-align: left;
+    }
+
+    .chip[aria-pressed="true"] {
+      color: var(--blue);
+      background: var(--blue-soft);
+      border-color: #aac9e8;
+      font-weight: 700;
+    }
+
+    .summary-row {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(150px, 1fr));
+      gap: 12px;
+      max-width: 1440px;
+      margin-bottom: 16px;
+    }
+
+    .summary-card {
+      padding: 13px 14px;
+    }
+
+    .metric-label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    .metric-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: #24364f;
+    }
+
+    .metric-note {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      max-width: 1440px;
+    }
+
+    .funnel-card {
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    .funnel-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 15px 16px;
+      background: var(--panel-soft);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .funnel-title {
+      margin: 0 0 5px;
+      font-size: 20px;
+      letter-spacing: 0;
+    }
+
+    .funnel-base {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .badge {
+      white-space: nowrap;
+      border-radius: 999px;
+      padding: 7px 10px;
+      color: var(--blue);
+      background: var(--blue-soft);
+      border: 1px solid #c7dbef;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .block {
+      padding: 14px 16px 16px;
+      border-bottom: 1px solid #edf1f5;
+    }
+
+    .block:last-child {
+      border-bottom: none;
+    }
+
+    .block-title {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .block-title h3 {
+      margin: 0;
+      font-size: 16px;
+      color: #344054;
+    }
+
+    .block-title span {
+      color: var(--muted);
+      font-size: 12px;
+      text-align: right;
+    }
+
+    .stage-list {
+      display: grid;
+      gap: 9px;
+    }
+
+    .stage {
+      display: grid;
+      grid-template-columns: minmax(170px, 1fr) 86px 70px;
+      gap: 10px;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .stage-name {
+      min-width: 0;
+      color: #344054;
+      font-size: 13px;
+    }
+
+    .bar-track {
+      position: relative;
+      height: 9px;
+      background: #eef2f6;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 5px;
+    }
+
+    .bar-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--blue);
+      transition: width 160ms ease;
+    }
+
+    .stage-count,
+    .stage-rate {
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      font-size: 13px;
+      color: #344054;
+    }
+
+    .stage-rate {
+      color: var(--muted);
+    }
+
+    .passed .bar-fill { background: var(--green); }
+    .pending .bar-fill { background: var(--amber); }
+    .rejected .bar-fill { background: var(--red); }
+    .supplement .bar-fill { background: var(--violet); }
+
+    .empty {
+      color: var(--muted);
+      padding: 20px 16px;
+      font-size: 14px;
+    }
+
+    .details {
+      max-width: 1440px;
+      margin-top: 14px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .details summary {
+      cursor: pointer;
+      padding: 13px 15px;
+      font-weight: 700;
+      color: #344054;
+      background: var(--panel-soft);
+      border-bottom: 1px solid var(--line);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th, td {
+      padding: 9px 10px;
+      border-bottom: 1px solid #edf1f5;
+      text-align: right;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    th:first-child,
+    td:first-child {
+      text-align: left;
+      white-space: normal;
+      min-width: 210px;
+    }
+
+    th {
+      color: #344054;
+      background: #f8fafc;
+      font-size: 12px;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    @media (max-width: 1100px) {
+      .filters,
+      .layout,
+      .summary-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 620px) {
+      header,
+      main {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      h1 { font-size: 23px; }
+
+      .stage {
+        grid-template-columns: 1fr 72px 60px;
+        gap: 8px;
+      }
+
+      .funnel-head,
+      .block-title {
+        display: block;
+      }
+
+      .badge {
+        display: inline-block;
+        margin-top: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Воронка жалоб</h1>
+    <p class="subhead">Май-июль 2026. Источник “Госуслуги” и незавершённые статусы исключены. Маркетплейсы отделены от основной воронки.</p>
+  </header>
+
+  <main>
+    <section class="filters" aria-label="Фильтры">
+      <div class="filter-card">
+        <div class="filter-head">
+          <h2 class="filter-title">ЕСИА / Анонимно</h2>
+          <button class="clear-button" data-clear="auth">Все</button>
+        </div>
+        <div class="chip-grid" id="authFilters"></div>
+      </div>
+
+      <div class="filter-card">
+        <div class="filter-head">
+          <h2 class="filter-title">Ведомство</h2>
+          <button class="clear-button" data-clear="ogv">Все</button>
+        </div>
+        <div class="chip-grid" id="ogvFilters"></div>
+      </div>
+
+      <div class="filter-card">
+        <div class="filter-head">
+          <h2 class="filter-title">Причина жалобы</h2>
+          <button class="clear-button" data-clear="reason">Все</button>
+        </div>
+        <div class="chip-grid" id="reasonFilters"></div>
+      </div>
+    </section>
+
+    <section class="summary-row" aria-label="Сводка">
+      <div class="summary-card">
+        <div class="metric-label">Всего в выборке</div>
+        <div class="metric-value" id="totalMetric">0</div>
+        <div class="metric-note" id="excludedMetric"></div>
+      </div>
+      <div class="summary-card">
+        <div class="metric-label">Не маркетплейсы</div>
+        <div class="metric-value" id="nonMarketMetric">0</div>
+        <div class="metric-note" id="nonMarketShare">0%</div>
+      </div>
+      <div class="summary-card">
+        <div class="metric-label">Маркетплейсы</div>
+        <div class="metric-value" id="marketMetric">0</div>
+        <div class="metric-note" id="marketShare">0%</div>
+      </div>
+      <div class="summary-card">
+        <div class="metric-label">Прошло модерацию</div>
+        <div class="metric-value" id="passedMetric">0</div>
+        <div class="metric-note" id="passedShare">0%</div>
+      </div>
+      <div class="summary-card">
+        <div class="metric-label">Дозапрос: не маркетплейсы</div>
+        <div class="metric-value" id="nonMarketSuppMetric">0</div>
+        <div class="metric-note" id="nonMarketSuppShare">0%</div>
+      </div>
+      <div class="summary-card">
+        <div class="metric-label">Дозапрос: маркетплейсы</div>
+        <div class="metric-value" id="marketSuppMetric">0</div>
+        <div class="metric-note" id="marketSuppShare">0%</div>
+      </div>
+    </section>
+
+    <section class="layout" aria-label="Воронки">
+      <article class="funnel-card" id="nonMarketFunnel"></article>
+      <article class="funnel-card" id="marketFunnel"></article>
+    </section>
+
+    <details class="details">
+      <summary>Таблица текущей выборки</summary>
+      <div style="overflow:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>Сегмент</th>
+              <th>Всего</th>
+              <th>Без дозапроса прошло</th>
+              <th>Дозапрос прошло</th>
+              <th>Дозапрос отклонено</th>
+              <th>Не дополнил</th>
+              <th>Без дозапроса отклонено</th>
+              <th>ОГВ не рассмотрел</th>
+              <th>ОГВ подтвердил</th>
+              <th>ОГВ отклонил</th>
+            </tr>
+          </thead>
+          <tbody id="detailRows"></tbody>
+        </table>
+      </div>
+    </details>
+  </main>
+
+  <script>
+    const payload = window.COMPLAINT_DASHBOARD_DATA;
+    const records = payload.records;
+    const metadata = payload.metadata;
+
+    const stageLabels = metadata.stageLabels;
+    const moderationStages = [
+      ["mod_no_request_pass", "passed"],
+      ["mod_supp_pass", "passed"],
+      ["mod_supp_reject", "supplement"],
+      ["mod_supp_no_response", "pending"],
+      ["mod_no_request_reject", "rejected"]
+    ];
+    const ogvStages = [
+      ["ogv_not_reviewed", "pending"],
+      ["ogv_confirmed", "passed"],
+      ["ogv_rejected", "rejected"]
+    ];
+
+    const selected = {
+      auth: new Set(),
+      ogv: new Set(),
+      reason: new Set()
+    };
+
+    const format = new Intl.NumberFormat("ru-RU");
+    const pct = (part, base) => base ? `${(part / base * 100).toFixed(1)}%` : "0.0%";
+
+    function makeChip(containerId, dimension, values) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = "";
+      values.forEach(value => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "chip";
+        button.textContent = value;
+        button.setAttribute("aria-pressed", "false");
+        button.addEventListener("click", () => {
+          if (selected[dimension].has(value)) {
+            selected[dimension].delete(value);
+          } else {
+            selected[dimension].add(value);
+          }
+          render();
+        });
+        container.appendChild(button);
+      });
+    }
+
+    function syncChips() {
+      [
+        ["authFilters", "auth"],
+        ["ogvFilters", "ogv"],
+        ["reasonFilters", "reason"]
+      ].forEach(([containerId, dimension]) => {
+        document.querySelectorAll(`#${containerId} .chip`).forEach(button => {
+          button.setAttribute("aria-pressed", selected[dimension].has(button.textContent) ? "true" : "false");
+        });
+      });
+    }
+
+    function matches(record) {
+      return (!selected.auth.size || selected.auth.has(record.auth)) &&
+        (!selected.ogv.size || selected.ogv.has(record.ogv)) &&
+        (!selected.reason.size || selected.reason.has(record.reason));
+    }
+
+    function sumRecords(source) {
+      const base = {
+        total: 0,
+        mod_pass_total: 0,
+        mod_no_request_pass: 0,
+        mod_supp_pass: 0,
+        mod_supp_reject: 0,
+        mod_supp_no_response: 0,
+        mod_no_request_reject: 0,
+        ogv_not_reviewed: 0,
+        ogv_confirmed: 0,
+        ogv_rejected: 0
+      };
+      source.forEach(record => {
+        Object.keys(base).forEach(key => {
+          base[key] += record[key] || 0;
+        });
+      });
+      base.supp_total = base.mod_supp_pass + base.mod_supp_reject + base.mod_supp_no_response;
+      return base;
+    }
+
+    function stageRow(stageKey, cssClass, value, denominator) {
+      const rate = denominator ? value / denominator * 100 : 0;
+      return `
+        <div class="stage ${cssClass}">
+          <div class="stage-name">
+            ${stageLabels[stageKey]}
+            <div class="bar-track"><div class="bar-fill" style="width:${Math.min(rate, 100)}%"></div></div>
+          </div>
+          <div class="stage-count">${format.format(value)}</div>
+          <div class="stage-rate">${pct(value, denominator)}</div>
+        </div>
+      `;
+    }
+
+    function funnelHtml(title, data) {
+      if (!data.total) {
+        return `
+          <div class="funnel-head">
+            <div>
+              <h2 class="funnel-title">${title}</h2>
+              <div class="funnel-base">0 жалоб</div>
+            </div>
+          </div>
+          <div class="empty">Нет данных в текущей комбинации фильтров.</div>
+        `;
+      }
+
+      const moderation = moderationStages
+        .map(([key, cssClass]) => stageRow(key, cssClass, data[key], data.total))
+        .join("");
+      const ogv = ogvStages
+        .map(([key, cssClass]) => stageRow(key, cssClass, data[key], data.mod_pass_total))
+        .join("");
+
+      return `
+        <div class="funnel-head">
+          <div>
+            <h2 class="funnel-title">${title}</h2>
+            <div class="funnel-base">${format.format(data.total)} жалоб</div>
+          </div>
+          <div class="badge">${pct(data.mod_pass_total, data.total)} прошло модерацию</div>
+        </div>
+        <div class="block">
+          <div class="block-title">
+            <h3>Модерация</h3>
+            <span>доля от жалоб сегмента</span>
+          </div>
+          <div class="stage-list">${moderation}</div>
+        </div>
+        <div class="block">
+          <div class="block-title">
+            <h3>ОГВ</h3>
+            <span>доля от прошедших модерацию</span>
+          </div>
+          <div class="stage-list">${ogv}</div>
+        </div>
+      `;
+    }
+
+    function detailRow(name, data) {
+      return `
+        <tr>
+          <td>${name}</td>
+          <td>${format.format(data.total)}</td>
+          <td>${format.format(data.mod_no_request_pass)}</td>
+          <td>${format.format(data.mod_supp_pass)}</td>
+          <td>${format.format(data.mod_supp_reject)}</td>
+          <td>${format.format(data.mod_supp_no_response)}</td>
+          <td>${format.format(data.mod_no_request_reject)}</td>
+          <td>${format.format(data.ogv_not_reviewed)}</td>
+          <td>${format.format(data.ogv_confirmed)}</td>
+          <td>${format.format(data.ogv_rejected)}</td>
+        </tr>
+      `;
+    }
+
+    function render() {
+      syncChips();
+      const filtered = records.filter(matches);
+      const nonMarket = sumRecords(filtered.filter(record => record.segment === "Не маркетплейс"));
+      const market = sumRecords(filtered.filter(record => record.segment === "Маркетплейс"));
+      const total = sumRecords(filtered);
+
+      document.getElementById("totalMetric").textContent = format.format(total.total);
+      document.getElementById("excludedMetric").textContent =
+        `исключено: ${format.format(metadata.excluded.source_gosuslugi)} Госуслуги, ${format.format(metadata.excluded.nonfinal)} незавершённых`;
+      document.getElementById("nonMarketMetric").textContent = format.format(nonMarket.total);
+      document.getElementById("nonMarketShare").textContent = pct(nonMarket.total, total.total);
+      document.getElementById("marketMetric").textContent = format.format(market.total);
+      document.getElementById("marketShare").textContent = pct(market.total, total.total);
+      document.getElementById("passedMetric").textContent = format.format(total.mod_pass_total);
+      document.getElementById("passedShare").textContent = pct(total.mod_pass_total, total.total);
+      document.getElementById("nonMarketSuppMetric").textContent = format.format(nonMarket.supp_total);
+      document.getElementById("nonMarketSuppShare").textContent = pct(nonMarket.supp_total, nonMarket.total);
+      document.getElementById("marketSuppMetric").textContent = format.format(market.supp_total);
+      document.getElementById("marketSuppShare").textContent = pct(market.supp_total, market.total);
+
+      document.getElementById("nonMarketFunnel").innerHTML = funnelHtml("Не маркетплейсы", nonMarket);
+      document.getElementById("marketFunnel").innerHTML = funnelHtml("Маркетплейсы", market);
+      document.getElementById("detailRows").innerHTML = [
+        detailRow("Не маркетплейсы", nonMarket),
+        detailRow("Маркетплейсы", market),
+        detailRow("Итого", total)
+      ].join("");
+    }
+
+    document.querySelectorAll("[data-clear]").forEach(button => {
+      button.addEventListener("click", () => {
+        selected[button.dataset.clear].clear();
+        render();
+      });
+    });
+
+    makeChip("authFilters", "auth", metadata.authOptions);
+    makeChip("ogvFilters", "ogv", metadata.ogvOptions);
+    makeChip("reasonFilters", "reason", metadata.reasonOptions);
+    render();
+  </script>
+</body>
+</html>
